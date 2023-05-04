@@ -1,15 +1,16 @@
 package com.example.course.Entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.util.Date;
 
+@MappedSuperclass
 public class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    private Long id;
+    private Integer id;
 
     @Column
     private Boolean deleted;

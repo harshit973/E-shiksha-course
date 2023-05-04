@@ -1,16 +1,19 @@
 package com.example.course.Entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "course_course")
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class Course extends BaseEntity {
+@EqualsAndHashCode(callSuper = true)
+public class Course extends BaseEntity implements Serializable {
+
     @NonNull
     @Column(name = "name")
     private String name;
@@ -19,6 +22,10 @@ public class Course extends BaseEntity {
     private String duration;
     @Column(name = "description")
     private String description;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "educator",referencedColumnName = "id")
+    private String educator;
     @PrePersist
     @PreUpdate
     public void formatter(){
