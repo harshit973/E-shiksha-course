@@ -1,10 +1,9 @@
 package com.example.course.Entity;
 
-import javax.persistence.*;
-
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
+import javax.persistence.*;
 import java.util.Date;
 
 @MappedSuperclass

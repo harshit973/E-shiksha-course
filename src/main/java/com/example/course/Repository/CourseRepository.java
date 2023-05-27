@@ -8,13 +8,14 @@ import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
 
-public interface CourseRepository extends JpaRepository<Course,Long> {
+public interface CourseRepository extends JpaRepository<Course, Long> {
     @Modifying
     @Transactional
-    @Query(nativeQuery = true,value = EntityConstants.updateCourseQuery)
-    void updateById(final Long id,final String name,final String description,final Long educator);
+    @Query(nativeQuery = true, value = EntityConstants.updateCourseQuery)
+    void updateById(final Long id, final String name, final String description, final Long educator);
+
     @Modifying
     @Transactional
-    @Query(nativeQuery = true,value = EntityConstants.deleteCourseQuery)
+    @Query(nativeQuery = true, value = EntityConstants.deleteCourseQuery)
     void deleteById(final Long id);
 }
