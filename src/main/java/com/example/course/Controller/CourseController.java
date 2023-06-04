@@ -1,6 +1,9 @@
 package com.example.course.Controller;
 
 import com.example.course.Constants.ApiConstants;
+import com.example.course.Entity.Course;
+import com.example.course.Entity.Page.CoursePage;
+import com.example.course.Entity.SearchCriteria.CourseSearchCriteria;
 import com.example.course.Exception.ControllerException;
 import com.example.course.Exception.RecordNotExistsException;
 import com.example.course.Service.CourseService;
@@ -9,6 +12,7 @@ import com.example.course.dto.IdDataDto;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +26,7 @@ public class CourseController {
     @Autowired
     CourseService courseService;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<IdDataDto> create(@RequestBody final CourseDataDto courseRequest) {
         return new ResponseEntity<>(this.courseService.createCourse(courseRequest), HttpStatus.CREATED);
     }
@@ -33,8 +37,13 @@ public class CourseController {
             return new ResponseEntity<>(this.courseService.getCourse(id), HttpStatus.OK);
         } catch (RecordNotExistsException exception) {
             ControllerException ce = new ControllerException(exception.getMessage(), exception.getStatus());
-            return new ResponseEntity<>(ce.getMessage(), ce.getStatus());
+            return new ResponseEntity<>(ce, ce.getStatus());
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<Course>> filterCourse(@NonNull CoursePage coursePage, @NonNull CourseSearchCriteria courseSearchCriteria) {
+        return new ResponseEntity<>(this.courseService.filterCourse(coursePage, courseSearchCriteria), HttpStatus.OK);
     }
 
     @PutMapping(ApiConstants.separator + ApiConstants.idUrlParam)
@@ -43,7 +52,7 @@ public class CourseController {
             return new ResponseEntity<>(this.courseService.updateCourse(id, courseRequest), HttpStatus.OK);
         } catch (RecordNotExistsException exception) {
             ControllerException ce = new ControllerException(exception.getMessage(), exception.getStatus());
-            return new ResponseEntity<>(ce.getMessage(), ce.getStatus());
+            return new ResponseEntity<>(ce, ce.getStatus());
         }
 
     }

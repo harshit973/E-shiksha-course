@@ -1,5 +1,6 @@
 package com.example.course.Entity;
 
+import com.example.course.Entity.Listners.BaseListner;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -8,6 +9,7 @@ import java.util.Date;
 
 @MappedSuperclass
 @Data
+@EntityListeners(BaseListner.class)
 public class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,23 +20,13 @@ public class BaseEntity {
     protected Boolean deleted;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_date", nullable = false, updatable = false)
+    @Column(name = "created_date")
     @CreatedDate
     protected Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updated_date", nullable = false, updatable = false)
+    @Column(name = "updated_date")
     @CreatedDate
     protected Date updatedAt;
 
-    @PrePersist
-    public void onCreate() {
-        this.createdAt = new Date();
-        this.deleted = false;
-    }
-
-    @PreUpdate
-    public void onUpdate() {
-        this.updatedAt = new Date();
-    }
 }

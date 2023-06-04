@@ -1,23 +1,20 @@
 package com.example.course.Service.impl;
 
-import com.example.course.Constants.ApiConstants;
+import com.example.course.Constants.ErrorMessages;
 import com.example.course.Entity.Course;
+import com.example.course.Entity.Page.CoursePage;
+import com.example.course.Entity.SearchCriteria.CourseSearchCriteria;
 import com.example.course.Exception.RecordNotExistsException;
+import com.example.course.Repository.CourseCriteriaRepository;
 import com.example.course.Repository.CourseRepository;
 import com.example.course.Service.CourseService;
 import com.example.course.dto.CourseDataDto;
 import com.example.course.dto.IdDataDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -25,22 +22,25 @@ import java.util.Optional;
 public class CourseServiceImpl implements CourseService {
     @Autowired
     CourseRepository courseRepo;
+
     @Autowired
-    RestTemplate restTemplate;
-    @Value("erp.user")
-    private String fetchEducatorUrl;
+    CourseCriteriaRepository courseCriteriaRepo;
 
     @Override
     public IdDataDto createCourse(final CourseDataDto course) {
         Course createdCourse = this.courseRepo.save(new Course(course.getName(), 0, course.getDescription(), false, course.getEducator()));
         return new IdDataDto(createdCourse.getId());
     }
+    @Override
+    public Page<Course> filterCourse(final CoursePage coursePage, final CourseSearchCriteria courseSearchCriteria) {
+        return courseCriteriaRepo.filter(coursePage,courseSearchCriteria);
+    }
 
     @Override
     public CourseDataDto getCourse(final Long id) throws RecordNotExistsException {
         Optional<Course> optionalCourse = this.courseRepo.findById(id);
         if (!optionalCourse.isPresent() || optionalCourse.get().getDeleted()) {
-            throw new RecordNotExistsException("This course does not exists");
+            throw new RecordNotExistsException(ErrorMessages.COURSE_NOT_EXISTS);
         }
         Course course = optionalCourse.get();
         final String name = course.getName();
@@ -71,17 +71,17 @@ public class CourseServiceImpl implements CourseService {
     public IdDataDto updateCourse(final Long id, final CourseDataDto newCourseData) throws RecordNotExistsException {
         Optional<Course> optionalCourse = this.courseRepo.findById(id);
         if (!optionalCourse.isPresent() || optionalCourse.get().getDeleted()) {
-            throw new RecordNotExistsException("This course does not exists");
+            throw new RecordNotExistsException(ErrorMessages.COURSE_NOT_EXISTS);
         }
         Course courseData = optionalCourse.get();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        HttpEntity entity = new HttpEntity<>(headers);
-        this.restTemplate.exchange(fetchEducatorUrl + ApiConstants.separator + courseData.getEducator(), HttpMethod.GET, entity, Object.class);
         updateCourseName(courseData, newCourseData.getName());
         updateCourseDescription(courseData, newCourseData.getDescription());
         updateCourseEducator(courseData, newCourseData.getEducator());
-        this.courseRepo.updateById(id, newCourseData.getName(), newCourseData.getDescription(), newCourseData.getEducator());
+        try{
+            this.courseRepo.save(courseData);
+        }catch (DataIntegrityViolationException exception){
+            throw new RecordNotExistsException(ErrorMessages.EDUCATOR_NOT_EXISTS);
+        }
         return new IdDataDto(id);
     }
 
