@@ -11,4 +11,8 @@ public class CourseDataDto {
     private String name;
     private String description;
     private Long educator;
+    private Integer rating;
+    private String thumbnail;
+    private Integer price;
+
 }

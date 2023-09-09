@@ -58,7 +58,7 @@ public class ModuleServiceImpl implements ModuleService {
         }
         Module module=optionalModule.get();
         Course course=module.getCourse();
-        return new ModuleDataDTO(module.getName(), new CourseDataDto(course.getName(), course.getDescription(), course.getEducator()));
+        return new ModuleDataDTO(module.getName(), new CourseDataDto(course.getName(), course.getDescription(), course.getEducator(),course.getRating(),course.getThumbnail(),course.getPrice()));
     }
 
     @Override

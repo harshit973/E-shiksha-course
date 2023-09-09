@@ -67,7 +67,7 @@ public class LectureServiceImpl implements LectureService {
         if (lecture.getDeleted()) {
             throw new RecordNotExistsException(ErrorMessages.LECTURE_NOT_EXISTS);
         }
-        return new LectureDataDTO(lecture.getName(), lecture.getSource(), new ModuleDataDTO(module.getName(), new CourseDataDto(course.getName(), course.getDescription(), course.getEducator())));
+        return new LectureDataDTO(lecture.getName(), lecture.getSource(), new ModuleDataDTO(module.getName(), new CourseDataDto(course.getName(), course.getDescription(), course.getEducator(),course.getRating(),course.getThumbnail(),course.getPrice())));
     }
 
     @Override

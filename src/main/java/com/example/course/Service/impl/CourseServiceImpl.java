@@ -28,7 +28,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public IdDataDto createCourse(final CourseDataDto course) {
-        Course createdCourse = this.courseRepo.save(new Course(course.getName(), 0, course.getDescription(), false, course.getEducator()));
+        Course createdCourse = this.courseRepo.save(new Course(course.getName(), 0, course.getDescription(), false, course.getEducator(),course.getRating(),course.getThumbnail(),course.getPrice()));
         return new IdDataDto(createdCourse.getId());
     }
     @Override
@@ -46,7 +46,7 @@ public class CourseServiceImpl implements CourseService {
         final String name = course.getName();
         final String description = course.getDescription();
         final Long educatorId = course.getEducator();
-        return new CourseDataDto(name, description, educatorId);
+        return new CourseDataDto(name, description, educatorId,course.getRating(),course.getThumbnail(),course.getPrice());
     }
 
     private void updateCourseName(Course course, final String name) {
@@ -66,6 +66,22 @@ public class CourseServiceImpl implements CourseService {
             course.setEducator(educatorId);
         }
     }
+    private void updateCourseRating(Course course, final Integer rating) {
+        if (Objects.nonNull(rating)) {
+            course.setRating(rating);
+        }
+    }
+    private void updateCourseThumbnail(Course course, final String thumbnail) {
+        if (Objects.nonNull(thumbnail)) {
+            course.setThumbnail(thumbnail);
+        }
+    }
+    private void updateCoursePrice(Course course, final Integer price) {
+        if (Objects.nonNull(price)) {
+            course.setPrice(price);
+        }
+    }
+
 
     @Override
     public IdDataDto updateCourse(final Long id, final CourseDataDto newCourseData) throws RecordNotExistsException {
@@ -77,6 +93,9 @@ public class CourseServiceImpl implements CourseService {
         updateCourseName(courseData, newCourseData.getName());
         updateCourseDescription(courseData, newCourseData.getDescription());
         updateCourseEducator(courseData, newCourseData.getEducator());
+        updateCourseRating(courseData, newCourseData.getRating());
+        updateCourseThumbnail(courseData, newCourseData.getThumbnail());
+        updateCoursePrice(courseData, newCourseData.getPrice());
         try{
             this.courseRepo.save(courseData);
         }catch (DataIntegrityViolationException exception){

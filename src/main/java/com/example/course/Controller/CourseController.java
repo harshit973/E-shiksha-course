@@ -13,14 +13,18 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Log4j2
 @RestController
 @RequestMapping(value = ApiConstants.version + ApiConstants.separator + ApiConstants.course, produces = MediaType.APPLICATION_JSON_VALUE)
+@CrossOrigin(originPatterns = "*")
 public class CourseController {
 
     @Autowired
@@ -44,6 +48,12 @@ public class CourseController {
     @GetMapping
     public ResponseEntity<Page<Course>> filterCourse(@NonNull CoursePage coursePage, @NonNull CourseSearchCriteria courseSearchCriteria) {
         return new ResponseEntity<>(this.courseService.filterCourse(coursePage, courseSearchCriteria), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/trending")
+    public ResponseEntity<List<Course>> trendingCourse() {
+        CoursePage coursePage = new CoursePage(0,5, Sort.Direction.DESC,"rating");
+        return new ResponseEntity<>(this.courseService.filterCourse(coursePage, new CourseSearchCriteria()).getContent(), HttpStatus.OK);
     }
 
     @PutMapping(ApiConstants.separator + ApiConstants.idUrlParam)

@@ -46,7 +46,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
         final Enrollment enrollment = optionalEnrollment.get();
         final Course course=enrollment.getCourse();
-        return new EnrollmentCourseDto(enrollment.getUser_id(),new CourseDataDto(course.getName(),course.getDescription(), course.getEducator()));
+        return new EnrollmentCourseDto(enrollment.getUser_id(),new CourseDataDto(course.getName(),course.getDescription(), course.getEducator(),course.getRating(),course.getThumbnail(),course.getPrice()));
     }
 
     @Override
